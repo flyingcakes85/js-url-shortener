@@ -72,3 +72,16 @@ app.post("/", async (req, res) => {
     dest: dest,
   });
 });
+
+app.delete("/", async (req, res) => {
+  const id = req.body.id;
+  const db = new sqlite3.Database("urls.db", sqlite3.OPEN_READWRITE);
+  try {
+    await sqltools.execute(db, "DELETE FROM urls WHERE id=?", id);
+    res.status(200).json({ msg: "success" });
+  } catch (err) {
+    console.log(err);
+  } finally {
+    db.close();
+  }
+});
