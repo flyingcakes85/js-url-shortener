@@ -15,4 +15,12 @@ module.exports = {
       });
     });
   },
+  fetchFirst: async (db, sql, params) => {
+    return new Promise((resolve, reject) => {
+      db.get(sql, params, (err, row) => {
+        if (err) reject(err);
+        resolve(row);
+      });
+    });
+  },
 };

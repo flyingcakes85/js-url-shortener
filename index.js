@@ -21,8 +21,28 @@ function makeid(length) {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
+app.get("/:shortcode", async (req, res) => {
+  const shortcode = req.params.shortcode;
+  const db = new sqlite3.Database("urls.db", sqlite3.OPEN_READ);
+
+  try {
+    const dest = await sqltools.fetchFirst(
+      db,
+      "SELECT redirect FROM urls WHERE shortcode = ?",
+      [shortcode]
+    );
+    // db.close();
+
+    if (typeof dest !== "undefined") {
+      res.redirect(302, dest["redirect"]);
+    } else {
+      res.status(400).json({ msg: "not found" });
+    }
+  } catch (err) {
+    console.log(err);
+  } finally {
+    db.close();
+  }
 });
 
 app.listen(port, () => {
